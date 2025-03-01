@@ -22,4 +22,5 @@ urlpatterns = [
     path("", views.index),
     path("graph/",views.graph_view),
      path("live-matlab-graph/", views.live_graph_page, name="live_graph_page"),
+      path('run-mat2/', views.run_mat2, name='run-mat2'),
 ]

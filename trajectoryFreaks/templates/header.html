@@ -1,10 +1,13 @@
-<script type=module src="/static/main.js"></script>
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'main.css' %}">
+<script type="module" src="{% static 'main.js' %}"></script>
+
 <title>{{ title }}</title>
 <nav>
         <h1>Trajectory Freaks</h1>
         <div>
-        <a href="/" id="assignment">Page 1</a>
-        <a href="/" id="profile">Page 2</a>
+        <a href="/graph/" id="assignment">Page 1</a>
+        <a href="/live-matlab-graph/" id="profile">Page 2</a>
     </div>
 
 </nav>

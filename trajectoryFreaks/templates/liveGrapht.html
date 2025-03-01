@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
+{% include "header.html" with title="Main" %}
+{% csrf_token %}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,10 +13,57 @@
             let imgData = event.data;
             document.getElementById("graph").src = "data:image/png;base64," + imgData;
         };
+        function getCSRFToken() {
+    return document.cookie.split('; ')
+        .find(row => row.startsWith('csrftoken='))
+        ?.split('=')[1];
+}
+        function updateBounds() {
+    let lowerBound = document.getElementById("lowerBound").value;
+    let upperBound = document.getElementById("upperBound").value;
+
+    if (lowerBound === "" || upperBound === "") {
+        alert("Please enter both bounds in seconds.");
+        return;
+    }
+
+    if (parseInt(lowerBound) >= parseInt(upperBound)) {
+        alert("Lower bound must be less than upper bound.");
+        return;
+    }
+
+    fetch('/run-mat2/', {  // Adjust this URL based on Django setup
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCSRFToken()
+        },
+        body: JSON.stringify({
+            lower: parseInt(lowerBound),
+            upper: parseInt(upperBound)
+        })
+    }).then(response => response.json())
+      .then(data => alert(`Bounds updated: ${data.message}`))
+      .catch(error => console.error('Error:', error));
+}
+
     </script>
 </head>
+
 <body>
     <h1>Live MATLAB Graph</h1>
+
+    <!-- Bound input fields -->
+    <label for="lowerBound">Lower Bound (s):</label>
+    <input type="number" id="lowerBound" min="0" placeholder="Enter lower bound">
+
+    <label for="upperBound">Upper Bound (s):</label>
+    <input type="number" id="upperBound" min="0" placeholder="Enter upper bound">
+
+    <button onclick="updateBounds()">Set Bounds</button>
+
+    <!-- Live graph -->
     <img id="graph" src="" alt="Real-time MATLAB Graph">
 </body>
+
 </html>
