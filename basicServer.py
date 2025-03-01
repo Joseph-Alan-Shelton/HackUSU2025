@@ -18,11 +18,8 @@ class SQL:
         row = self.cursor.fetchone()
         print("Connected to:", row[0])
 
-    def query(self, offset, batch_size):
-        query = f"""
-        SELECT * FROM RpoPlan ORDER BY (select Null) OFFSET {offset} ROWS FETCH NEXT {batch_size} ROWS ONLY;
-        """
-        self.cursor.execute(query)
+    def query(self, query_string, params=()):
+        self.cursor.execute(query_string, params)
         return self.cursor.fetchall()
 
     def close(self):
