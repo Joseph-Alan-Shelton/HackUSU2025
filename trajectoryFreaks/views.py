@@ -38,17 +38,11 @@ def run_mat2(request):
     return JsonResponse({"error": "Invalid request"}, status=400)
 
 def graph_view(request):
-    filename = 'trajectoryFreaks/mat2.py'
-    with open(filename) as file:
-        exec(file.read())
-
-    
-    mat2.main(0,100)  # Assuming there's a function named 'main' in script2.py
-
-    """ import subprocess
-    subprocess.run(['python', filename]) """
+    process = multiprocessing.Process(target=mat2.main, args=(0, 100))
+    process.start()  # Runs in the background
 
     return render(request, "liveGrapht.html")
+
 
 def run_mat(request):
     if request.method == "POST":
