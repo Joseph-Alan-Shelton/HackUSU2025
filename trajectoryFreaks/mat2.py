@@ -1,7 +1,5 @@
 import matlab.engine
-import time
 import os
-from random import randint
 import numpy as np
 from models import best_fit_plane  # Import the best-fit plane function
 import sys
@@ -25,9 +23,6 @@ q= f"""
         SELECT * FROM RpoPlan WHERE ? <= secondsSinceStart And secondsSinceStart <= ? ORDER BY (select Null);
         """
 x = s.query(q,(0,1000))
-
-times = [row[0] for row in x]
-print(times)
 
 # Plot Deputy-----------------------------------------------------------------------
 # Get Deputy's positions from the sheet
@@ -61,29 +56,6 @@ z_mat = matlab.double(deputyZpos)
 # Update scatter plot data without deleting it
 eng.set(scatter_handle, 'XData', x_mat, 'YData', y_mat, 'ZData', z_mat, nargout=0)
 
-# Compute best-fit plane
-_, equation = best_fit_plane(deputyXpos, deputyYpos, deputyZpos)
-
-# Extract coefficients (z = Ax + By + C)
-A, B, C = equation[0], equation[1], equation[2]
-
-# Generate a mesh grid for the plane
-x_fit = np.linspace(min(deputyXpos), max(deputyXpos), 10)
-y_fit = np.linspace(min(deputyYpos), max(deputyYpos), 10)
-X_fit, Y_fit = np.meshgrid(x_fit, y_fit)
-Z_fit = A * X_fit + B * Y_fit + C  # Compute Z from the plane equation
-
-# Convert plane data to MATLAB format
-X_mat = matlab.double(X_fit.tolist())
-Y_mat = matlab.double(Y_fit.tolist())
-Z_mat = matlab.double(Z_fit.tolist())
-
-# Add the new best-fit plane
-plane_handle = eng.surf(X_mat, Y_mat, Z_mat, 'FaceAlpha', 0.5, 'EdgeColor', 'none', nargout=1)  # 50% transparency
-
-
-
-
 # Plot Chief--------------------------------------------------------------------------
 # Get Deputy's positions from the sheet
 chiefXpos=[row[8] for row in x]
@@ -105,6 +77,26 @@ z_mat = matlab.double(chiefZpos)
 
 # Update scatter plot data without deleting it
 eng.set(scatter_handle, 'XData', x_mat, 'YData', y_mat, 'ZData', z_mat, nargout=0)
+
+# Compute best-fit plane for Deputy ----------------------------------------------------------
+_, equation = best_fit_plane(deputyXpos, deputyYpos, deputyZpos)
+
+# Extract coefficients (z = Ax + By + C)
+A, B, C = equation[0], equation[1], equation[2]
+
+# Generate a mesh grid for the plane
+x_fit = np.linspace(min(deputyXpos), max(deputyXpos), 10)
+y_fit = np.linspace(min(deputyYpos), max(deputyYpos), 10)
+X_fit, Y_fit = np.meshgrid(x_fit, y_fit)
+Z_fit = A * X_fit + B * Y_fit + C  # Compute Z from the plane equation
+
+# Convert plane data to MATLAB format
+X_mat = matlab.double(X_fit.tolist())
+Y_mat = matlab.double(Y_fit.tolist())
+Z_mat = matlab.double(Z_fit.tolist())
+
+# Add the new best-fit plane
+plane_handle = eng.surf(X_mat, Y_mat, Z_mat, 'FaceAlpha', 0.5, 'EdgeColor', 'none', nargout=1)  # 50% transparency
 
 # Save the updated graph **without opening MATLAB**
 eng.saveas(eng.gcf(), image_path, 'png', nargout=0)
