@@ -111,3 +111,7 @@ def graph_view_live(request):
     process.start()  # Runs in the background
 
     return render(request, "liveGrapht.html")
+
+def table(request):
+    data = [[1,2,3],[4,5,6]]
+    return render(request, "table.html",{table:data})
