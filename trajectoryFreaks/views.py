@@ -10,6 +10,12 @@ from . import matTraj
 import json
 from django.http import JsonResponse
 import multiprocessing
+import os
+import sys
+# Add the parent directory to sys.path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from basicServer import SQL # Now import SQL from basicServer
+
 # Create your views here.
 def index(request):
     return render(request, "main.html")
@@ -113,6 +119,41 @@ def graph_view_live(request):
 
     return render(request, "liveGrapht.html")
 
+def table(request):
+    # Initialize sql connection
+    s = SQL()
+
+    # Get the positions within our bounds
+    q = f"""
+        SELECT maneuverId, ManeuverPlan.secondsSinceStart, WaypointX, WaypointY, WaypointZ
+        FROM ManeuverPlan JOIN RpoPlan 
+        on ManeuverPlan.secondsSinceStart = RpoPlan.secondsSinceStart 
+        where ? <= RpoPlan.secondsSinceStart And RpoPlan.secondsSinceStart <= ? 
+        ORDER BY (select RpoPlan.secondsSinceStart);
+        """
+    maneuverData = s.query(q,(0, 1400563.295))
+
+    q = f"""
+        SELECT eventId, startSeconds, stopSeconds, eventType
+        FROM PayloadEvents
+        where ? <= startSeconds Or stopSeconds <= ?;
+        """
+    payloadData = s.query(q,(0, 1400563.295))
+
+    q = f"""
+        SELECT contactId, startSeconds, stopSeconds, groundSite
+        FROM GroundContacts 
+        where ? <= startSeconds Or stopSeconds <= ?;
+        """
+    groundData = s.query(q,(0, 1400563.295))
+
+    context = {
+        'ManeuverData':maneuverData,
+        'PayloadData':payloadData,
+        'GroundData':groundData
+    }
+    
+    return render(request, "table.html", context)
 
 def run_mat_Traj(request):
     if request.method == "POST":

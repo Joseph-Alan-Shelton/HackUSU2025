@@ -106,7 +106,7 @@ def main(lower, upper):
 
     # Create Chief's scatter plot (Red)
     deputy_positions = matlab.double([chiefXpos, chiefYpos, chiefZpos])
-    scatter_handle = eng.scatter3(*deputy_positions, 50, 'b', 'filled', nargout=1)
+    scatter_handle = eng.scatter3(*deputy_positions, 50, 'r', 'o', nargout=1)
 
     # Save the updated graph
     eng.saveas(eng.gcf(), IMAGE_PATH, 'png', nargout=0)

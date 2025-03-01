@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+{% include "header.html" with title="Main" %}
+{% csrf_token %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live MATLAB Graph</title>
+    <script>
+        let socket = new WebSocket("ws://127.0.0.1:8000/ws/live-graph/");
+
+        socket.onmessage = function(event) {
+            let imgData = event.data;
+            document.getElementById("graph").src = "data:image/png;base64," + imgData;
+        };
+        function getCSRFToken() {
+    return document.cookie.split('; ')
+        .find(row => row.startsWith('csrftoken='))
+        ?.split('=')[1];
+}
+        function updateBounds() {
+    let lowerBound = document.getElementById("lowerBound").value;
+    let upperBound = document.getElementById("upperBound").value;
+
+    if (lowerBound === "" || upperBound === "") {
+        alert("Please enter both bounds in seconds.");
+        return;
+    }
+
+    if (parseInt(lowerBound) >= parseInt(upperBound)) {
+        alert("Lower bound must be less than upper bound.");
+        return;
+    }
+
+    fetch('/run-table/', {  // Adjust this URL based on Django setup
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCSRFToken()
+        },
+        body: JSON.stringify({
+            lower: parseInt(lowerBound),
+            upper: parseInt(upperBound)
+        })
+    }).then(response => response.json())
+      .then(data => alert(`Bounds updated: ${data.message}`))
+      .catch(error => console.error('Error:', error));
+}
+
+    </script>
+</head>
+
+<body>
+    <div id="TableDiv">
+        <table border="1">
+            <tr>
+                <th>Maneuver ID</th>
+                <th>Maneuver Start Time</th>
+                <th>Waypoint X</th>
+                <th>Waypoint Y</th>
+                <th>Waypoint Z</th>
+            </tr>
+            {% for item in ManeuverData %}
+                <tr>
+                    {% for element in item %}
+                        <td>{{ element }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+        <table border="1">
+            <tr>
+                <th>Event ID</th>
+                <th>Payload Start Time</th>
+                <th>Payload End Time</th>
+                <th>Event Type</th>
+            </tr>
+            {% for item in PayloadData %}
+                <tr>
+                    {% for element in item %}
+                        <td>{{ element }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+        <table border="1">
+            <tr>
+                <th>Contact ID</th>
+                <th>Contact Start Time</th>
+                <th>Contact End Time</th>
+                <th>Ground Site</th>
+            </tr>
+            {% for item in GroundData %}
+                <tr>
+                    {% for element in item %}
+                        <td>{{ element }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+</body>
+
+</html>

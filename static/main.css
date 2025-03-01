@@ -32,3 +32,16 @@ h1 {
     margin: 10px;
     text-decoration: underline;
 }
+
+#TableDiv {
+    display: flex;
+    flex-direction: row;
+}
+
+table {
+    padding: 20px;
+}
+
+nav {
+    width: 100%;
+}
