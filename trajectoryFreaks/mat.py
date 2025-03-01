@@ -46,12 +46,13 @@ z_mat = matlab.double(deputyZpos[0])
 
 # Create MATLAB figure **(only once)**
 eng.figure('Visible', 'off', nargout=0)  # Hide the figure
-scatter_handle = eng.scatter3(x_mat, y_mat, z_mat, 50, 'b', 'filled', nargout=1)  # Scatter plot
+scatter_handle = eng.scatter3(x_mat, y_mat, z_mat, 50, 'b', 'filled', "DisplayName", "Deputy Path", nargout=1)  # Scatter plot
 eng.xlabel('X Values', nargout=0)
 eng.ylabel('Y Values', nargout=0)
 eng.zlabel('Z Values', nargout=0)
 eng.title('3D Live Graph with Best-Fit Plane', nargout=0)
 eng.grid('on', nargout=0)
+eng.legend('Deputy Path', nargout=0) # Specifies name for already initialized scatter
 eng.hold('on', nargout=0)  # Keep scatter points when adding the plane
 
 # Variable to store plane handle
@@ -77,7 +78,7 @@ y_mat = matlab.double(chiefYpos[0])
 z_mat = matlab.double(chiefZpos[0])
 
 # Create MATLAB figure **(only once)**
-scatter_handle = eng.scatter3(x_mat, y_mat, z_mat, 50, 'r', 'o', nargout=1)  # Scatter plot
+scatter_handle = eng.scatter3(x_mat, y_mat, z_mat, 50, 'r', 'o', "DisplayName", "RSO Path", nargout=1)  # Scatter plot
 
 # Convert updated lists to MATLAB arrays
 x_mat = matlab.double(chiefXpos)
@@ -105,7 +106,7 @@ Y_mat = matlab.double(Y_fit.tolist())
 Z_mat = matlab.double(Z_fit.tolist())
 
 # Add the new best-fit plane
-plane_handle = eng.surf(X_mat, Y_mat, Z_mat, 'FaceAlpha', 0.5, 'EdgeColor', 'none', nargout=1)  # 50% transparency
+plane_handle = eng.surf(X_mat, Y_mat, Z_mat, 'FaceAlpha', 0.5, 'EdgeColor', 'none', "DisplayName", "Best-Fit Plane", nargout=1)  # 50% transparency
 
 # Highlight points when maneuvers occur -------------------------------------------------------------
 # Get the times of maneuvers that occur within our bounds
@@ -130,7 +131,7 @@ if xManeuvers:
     z_mat = matlab.double(zManeuvers[0])
 
     # Create MATLAB figure
-    scatter_handle = eng.scatter3(x_mat, y_mat, z_mat, 50, 'm', 'filled', nargout=1)  # Scatter plot
+    scatter_handle = eng.scatter3(x_mat, y_mat, z_mat, 50, 'm', 'filled', "DisplayName", "Manuevers", nargout=1)  # Scatter plot
 
     # Convert updated lists to MATLAB arrays
     x_mat = matlab.double(xManeuvers)
@@ -150,12 +151,12 @@ q = f"""
     """
 groundContactPositions = s.query(q,(lowerbound, upperbound))
 
-# Find the coordinates of every maneuver time
+# Find the coordinates of every grand contact range
 xGrountContacts = [row[0] for row in groundContactPositions]
 yGrountContacts = [row[1] for row in groundContactPositions]
 zGrountContacts = [row[2] for row in groundContactPositions]
 
-# If there are any manuevers in these bounds, plot them
+# If there are any ground contacts in these bounds, plot them
 if xGrountContacts:
     # Convert to MATLAB format
     x_mat = matlab.double(xGrountContacts[0])
@@ -163,7 +164,7 @@ if xGrountContacts:
     z_mat = matlab.double(zGrountContacts[0])
 
     # Create MATLAB figure
-    scatter_handle = eng.scatter3(x_mat, y_mat, z_mat, 50, 'g', 'filled', nargout=1)  # Scatter plot
+    scatter_handle = eng.scatter3(x_mat, y_mat, z_mat, 50, 'g', 'filled', "DisplayName", "Ground Contact", nargout=1)  # Scatter plot
 
     # Convert updated lists to MATLAB arrays
     x_mat = matlab.double(xGrountContacts)
@@ -184,12 +185,12 @@ q = f"""
     """
 payloadPositions = s.query(q,(lowerbound, upperbound))
 
-# Find the coordinates of every maneuver time
+# Find the coordinates of every payload event range
 xPayloads = [row[0] for row in payloadPositions]
 yPayloads = [row[1] for row in payloadPositions]
 zPayloads = [row[2] for row in payloadPositions]
 
-# If there are any manuevers in these bounds, plot them
+# If there are any payload events in these bounds, plot them
 if xPayloads:
     # Convert to MATLAB format
     x_mat = matlab.double(xPayloads[0])
@@ -197,7 +198,7 @@ if xPayloads:
     z_mat = matlab.double(zPayloads[0])
 
     # Create MATLAB figure
-    scatter_handle = eng.scatter3(x_mat, y_mat, z_mat, 50, 'c', 'filled', nargout=1)  # Scatter plot
+    scatter_handle = eng.scatter3(x_mat, y_mat, z_mat, 50, 'c', 'filled', "DisplayName", "Payload Events", nargout=1)  # Scatter plot
 
     # Convert updated lists to MATLAB arrays
     x_mat = matlab.double(xPayloads)
@@ -209,3 +210,4 @@ if xPayloads:
 
 # Save the updated graph **without opening MATLAB**
 eng.saveas(eng.gcf(), image_path, 'png', nargout=0)
+eng.hold('off', nargout=0)
