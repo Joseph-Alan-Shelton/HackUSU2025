@@ -6,4 +6,7 @@ install:
 	pip install -r requirements.txt
 
 deploy:
-	python manage.py runserver
+	python -m daphne -b 0.0.0.0 -p 8000 dataFreaks.asgi:application
+
+startMat:
+	python trajectoryFreaks/mat.py

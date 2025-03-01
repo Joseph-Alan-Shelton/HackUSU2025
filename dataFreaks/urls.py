@@ -20,5 +20,6 @@ from trajectoryFreaks import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("", views.index),
-    path("graph/",views.graph_view)
+    path("graph/",views.graph_view),
+     path("live-matlab-graph/", views.live_graph_page, name="live_graph_page"),
 ]

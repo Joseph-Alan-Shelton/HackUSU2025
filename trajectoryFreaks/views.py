@@ -8,6 +8,10 @@ from django.shortcuts import render
 def index(request):
     return render(request, "t.html")
 
+
+def live_graph_page(request):
+    return render(request, "liveGrapht.html")
+
 def graph_view(request):
     # Create the plot
     plt.figure(figsize=(5, 3))

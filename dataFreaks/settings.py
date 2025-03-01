@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'trajectoryFreaks',
+      "channels",
+      "daphne",
 ]
 
 MIDDLEWARE = [
@@ -80,7 +82,15 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+# WebSocket configuration
+ASGI_APPLICATION = "trajectoryFreaks.asgi.application"
 
+# Channels Layer (Using In-Memory Backend for Simplicity)
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    },
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators

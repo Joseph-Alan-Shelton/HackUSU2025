@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live MATLAB Graph</title>
+    <script>
+        let socket = new WebSocket("ws://127.0.0.1:8000/ws/live-graph/");
+
+        socket.onmessage = function(event) {
+            let imgData = event.data;
+            document.getElementById("graph").src = "data:image/png;base64," + imgData;
+        };
+    </script>
+</head>
+<body>
+    <h1>Live MATLAB Graph</h1>
+    <img id="graph" src="" alt="Real-time MATLAB Graph">
+</body>
+</html>
