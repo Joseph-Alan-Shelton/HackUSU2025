@@ -2,7 +2,10 @@ import matlab.engine
 import time
 import os
 from random import randint
-
+import numpy as np
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+from models.py import best_fit_plane
 # Start MATLAB Engine
 eng = matlab.engine.start_matlab()
 
