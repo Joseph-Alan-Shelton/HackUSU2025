@@ -108,7 +108,7 @@ def run_mat_live(request):
     return JsonResponse({"error": "Invalid request"}, status=400)
 
 def graph_view_live(request):
-    process = multiprocessing.Process(target=matLive.main, args=(0, 100))
+    process = multiprocessing.Process(target=matLive.main, args=(0, 10000))
     process.start()  # Runs in the background
 
     return render(request, "liveGrapht.html")

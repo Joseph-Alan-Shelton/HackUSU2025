@@ -19,29 +19,24 @@ def best_fit_plane(x, y, z):
     # Solve for coefficients [A, B, C] in the equation z = Ax + By + C
     C, _, _, _ = np.linalg.lstsq(A, z, rcond=None)
 
-    # Generate surface for visualization
-    x_fit = np.linspace(min(x), max(x), 10)
-    y_fit = np.linspace(min(y), max(y), 10)
-    X_fit, Y_fit = np.meshgrid(x_fit, y_fit)
+    x_range = np.linspace(np.min(x), np.max(x), 10)
+    y_range = np.linspace(np.min(y), np.max(y), 10)
+    X_fit, Y_fit = np.meshgrid(x_range, y_range)
     Z_fit = C[0] * X_fit + C[1] * Y_fit + C[2]  # Compute best-fit plane
 
     # Plot data points and best-fit plane
     fig = plt.figure(figsize=(8, 6))
     ax = fig.add_subplot(111, projection='3d')
     ax.scatter(x, y, z, color='blue', label='Original Data')
-    ax.plot_surface(X_fit, Y_fit, Z_fit, alpha=0.5, color='r')
+    ax.plot_surface(X_fit, Y_fit, Z_fit, alpha=0.5, cmap='Reds')
 
     # Labels and title
-    ax.set_xlabel('X Values')
-    ax.set_ylabel('Y Values')
-    ax.set_zlabel('Z Values')
-    ax.set_title('Best-Fit Plane in 3D')
+    ax.set(xlabel='X Values', ylabel='Y Values', zlabel='Z Values', title='Best-Fit Plane in 3D')
     ax.legend()
 
-    # Generate the best-fit plane equation as a string
-    equation = f"z = {C[0]:.4f}x + {C[1]:.4f}y + {C[2]:.4f}"
+    # Return figure and plane coefficients
     plt.close(fig)
-    return fig, C # Returns the figure and equation string
+    return fig, tuple(C)  # Returns figure and (A, B, C)
 
 
 def main(lower, upper):
@@ -58,22 +53,20 @@ def main(lower, upper):
     # Initialize SQL connection and query data
     s = SQL()
     q = """
-    SELECT * FROM RpoPlan 
-    WHERE ? <= secondsSinceStart AND secondsSinceStart <= ? 
-    ORDER BY (SELECT NULL);
-    """
+    SELECT positionChiefEciX, positionChiefEciY, positionChiefEciZ, positionDeputyEciX, positionDeputyEciY, positionDeputyEciZ FROM RpoPlan 
+    WHERE ? <= secondsSinceStart AND secondsSinceStart <= ? ;    """
     x = s.query(q, (lower, upper))
     s.close()
+    print("finished query")
     # Extract timestamps
-    times = [row[0] for row in x]
-
-
-    deputyXpos = [row[14] for row in x]
-    deputyYpos = [row[15] for row in x]
-    deputyZpos = [row[16] for row in x]
-    chiefXpos = [row[8] for row in x]
-    chiefYpos = [row[9] for row in x]
-    chiefZpos = [row[10] for row in x]
+    
+    # --------------------------- Plot Deputy ---------------------------
+    deputyXpos = [row[3] for row in x]
+    deputyYpos = [row[4] for row in x]
+    deputyZpos = [row[5] for row in x]
+    chiefXpos = [row[0] for row in x]
+    chiefYpos = [row[1] for row in x]
+    chiefZpos = [row[2] for row in x]
 
     deputyXposTemp = []
     deputyYposTemp = []
@@ -86,14 +79,10 @@ def main(lower, upper):
     
 
     # Set graph properties
-    eng.xlabel('X Values', nargout=0)
-    eng.ylabel('Y Values', nargout=0)
-    eng.zlabel('Z Values', nargout=0)
-    eng.title('3D Live Graph with Best-Fit Plane', nargout=0)
-    eng.grid('on', nargout=0)
-    eng.hold('on', nargout=0)
+    eng.eval("xlabel('X Values'); ylabel('Y Values'); zlabel('Z Values'); title('3D Live Graph with Best-Fit Plane'); grid on; hold on;", nargout=0)
 
-    for i in range(len(times)):
+
+    for i in range(0, len(deputyXpos), 10):
         print(i)
         # --------------------------- Plot Deputy ---------------------------
         deputyXposTemp.append(deputyXpos[i])
@@ -103,12 +92,9 @@ def main(lower, upper):
         chiefYposTemp.append(chiefYpos[i])
         chiefZposTemp.append(chiefZpos[i])
 
-        scatter_handle_2 = eng.scatter3(
-        matlab.double(deputyXposTemp), 
-        matlab.double(deputyYposTemp), 
-        matlab.double(deputyZposTemp), 
-        50, 'b', 'filled', nargout=1
-        )
+        deputy_positions = matlab.double([deputyXposTemp, deputyYposTemp, deputyZposTemp])
+        scatter_handle = eng.scatter3(*deputy_positions, 50, 'b', 'filled', nargout=1)
+        
         # Compute best-fit plane
         _, equation = best_fit_plane(deputyXposTemp, deputyYposTemp, deputyZposTemp)
         A, B, C = equation[0], equation[1], equation[2]
@@ -131,12 +117,8 @@ def main(lower, upper):
 
 
         # Create Chief's scatter plot (Red)
-        scatter_handle = eng.scatter3(
-        matlab.double(chiefXposTemp), 
-        matlab.double(chiefYposTemp), 
-        matlab.double(chiefZposTemp), 
-        50, 'r', 'o', nargout=1
-        )
+        deputy_positions = matlab.double([chiefXposTemp, chiefYposTemp, chiefZposTemp])
+        scatter_handle = eng.scatter3(*deputy_positions, 50, 'r', 'o', nargout=1)
         eng.view(3, nargout=0)
 
         # Save the updated graph
