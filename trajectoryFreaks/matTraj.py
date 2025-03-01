@@ -59,13 +59,14 @@ def main(lower, upper):
     # Define elliptical parametric equations
     x_ellipse = r1 * np.cos(t)
     y_ellipse = r2 * np.sin(t)
-    
-    z_ellipse =  (r2/113 * np.sin(t))  # Lifts the ellipse up
+    deputy_z_max = max(deputyZpos) if deputyZpos else None
+    z_ellipse = deputy_z_max * (np.sin(t))
+  # Lifts the ellipse up
 
 
     # Compute min/max for Deputy and Ellipse Z-values
     deputy_z_min = min(deputyZpos) if deputyZpos else None
-    deputy_z_max = max(deputyZpos) if deputyZpos else None
+   
     ellipse_z_min = min(z_ellipse)
     ellipse_z_max = max(z_ellipse)
 
