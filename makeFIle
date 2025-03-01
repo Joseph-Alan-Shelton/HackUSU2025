@@ -1,0 +1,9 @@
+PYTHON=python3
+VENV=venv
+# Install dependencies from requirements.txt
+install:
+	$(PYTHON) -m venv $(VENV)
+	pip install -r requirements.txt
+
+deploy:
+	python manage.py runserver
