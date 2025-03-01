@@ -23,6 +23,8 @@ def best_fit_plane(x, y, z):
     return tuple(C)  # Returns (A, B, C)
 
 def main(lower, upper):
+    lower=0
+    upper=75000
     print(f"Running main() with bounds: {lower}s - {upper}s")
 
     # Define image path
