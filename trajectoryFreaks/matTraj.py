@@ -1,65 +1,42 @@
-import matlab.engine
-import os
 import numpy as np
-import sys
 import matplotlib.pyplot as plt
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-
-from basicServer import SQL
-def best_fit_plane(x, y, z):
-    """Fits a best-fit plane to given 3D points and returns the plot and equation."""
-
-    # Convert input to numpy arrays
-    x, y, z = np.array(x), np.array(y), np.array(z)
-
-    # Create the design matrix for linear regression (Ax + By + C = Z)
-    A = np.column_stack((x, y, np.ones_like(x)))
-    
-    # Solve for coefficients [A, B, C] in the equation z = Ax + By + C
-    C, _, _, _ = np.linalg.lstsq(A, z, rcond=None)
-
-    # Generate surface for visualization
-    x_fit = np.linspace(min(x), max(x), 10)
-    y_fit = np.linspace(min(y), max(y), 10)
-    X_fit, Y_fit = np.meshgrid(x_fit, y_fit)
-    Z_fit = C[0] * X_fit + C[1] * Y_fit + C[2]  # Compute best-fit plane
-
-    # Plot data points and best-fit plane
-    fig = plt.figure(figsize=(8, 6))
-    ax = fig.add_subplot(111, projection='3d')
-    ax.scatter(x, y, z, color='blue', label='Original Data')
-    ax.plot_surface(X_fit, Y_fit, Z_fit, alpha=0.5, color='r')
-
-    # Labels and title
-    ax.set_xlabel('X Values')
-    ax.set_ylabel('Y Values')
-    ax.set_zlabel('Z Values')
-    ax.set_title('Best-Fit Plane in 3D')
-    ax.legend()
-
-    # Generate the best-fit plane equation as a string
-    equation = f"z = {C[0]:.4f}x + {C[1]:.4f}y + {C[2]:.4f}"
-    plt.close(fig)
-    return fig, C # Returns the figure and equation string
-
+from mpl_toolkits.mplot3d import Axes3D
 
 def main(lower, upper):
-    eng = matlab.engine.start_matlab()
+    # Define the semi-major and semi-minor axes
+    r1 = 50  # Stretch along X
+    r2 = 10  # Stretch along Y
 
-    # Define a point and direction for the line
-    point = matlab.double([1, 2, 3])  # Starting point (x0, y0, z0)
-    direction = matlab.double([2, -1, 1])  # Direction vector (a, b, c)
-    t_range = matlab.double([-5, 5])  # Range for parameter t
-    eng.addpath(r'C:\path\to\your\matlab\functions', nargout=0)  
+    t = np.linspace(lower, upper, 500)  # More points for smoothness
 
-    # Call MATLAB function
-    eng.draw3DLine(point, direction, t_range, nargout=0)
+    # Define elliptical parametric equations
+    x = r1 * np.cos(t) 
+    y = 0 # Instead of fixed y=0
+    z = r2 * np.sin(t)   # Optional height variation
+
+    # Create 3D figure
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+
+    # Plot the 3D elliptical curve
+    ax.plot(x, y, z, '.', linewidth=.1, label="3D Elliptical Polynomial Curve")
+
+    # Labels and title
+    ax.set_xlabel("X Axis")
+    ax.set_ylabel("Y Axis")
+    ax.set_zlabel("Z Axis")
+    ax.set_title("3D Elliptical Polynomial Curve")
+    ax.legend()
+    ax.grid(True)
+
+    # Fix aspect ratio (prevents stretching)
+    max_range = max(r1, r2, abs(upper))
+    ax.set_xlim([-max_range, max_range])
+    ax.set_ylim([-max_range, max_range])
+    ax.set_zlim([-max_range, max_range])
 
     # Save figure
-    IMAGE_PATH = "static/images/3Dline.png"
-    eng.saveas(eng.gcf(), IMAGE_PATH, 'png', nargout=0)
+    IMAGE_PATH = "static/images/ellipse_fixed.png"
+    plt.savefig(IMAGE_PATH)
 
-    eng.close()
-
-
+    plt.show()
