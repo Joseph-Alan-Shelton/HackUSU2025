@@ -22,9 +22,9 @@ image_path = "static/images/graph.png"
 # Initialize x, y, z values
 s=SQL()
 q= f"""
-        SELECT * FROM RpoPlan WHERE secondsSinceStart > 2000 ORDER BY (select Null) OFFSET ? ROWS FETCH NEXT ? ROWS ONLY;
+        SELECT * FROM RpoPlan WHERE ? <= secondsSinceStart And secondsSinceStart <= ? ORDER BY (select Null);
         """
-x = s.query(q,(0,10))
+x = s.query(q,(0,1000))
 
 times = [row[0] for row in x]
 print(times)
