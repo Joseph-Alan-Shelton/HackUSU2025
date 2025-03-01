@@ -1,65 +1,141 @@
-import matlab.engine
-import os
 import numpy as np
-import sys
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+import time
+import os
+import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-
 from basicServer import SQL
-def best_fit_plane(x, y, z):
-    """Fits a best-fit plane to given 3D points and returns the plot and equation."""
 
-    # Convert input to numpy arrays
+def best_fit_plane(x, y, z):
+    """Fits a best-fit plane to given 3D points and returns the plane equation coefficients."""
+    
+    # Convert to numpy arrays
     x, y, z = np.array(x), np.array(y), np.array(z)
 
-    # Create the design matrix for linear regression (Ax + By + C = Z)
+    # Design matrix for Ax + By + C = Z
     A = np.column_stack((x, y, np.ones_like(x)))
     
-    # Solve for coefficients [A, B, C] in the equation z = Ax + By + C
+    # Solve for coefficients A, B, C
     C, _, _, _ = np.linalg.lstsq(A, z, rcond=None)
 
-    # Generate surface for visualization
-    x_fit = np.linspace(min(x), max(x), 10)
-    y_fit = np.linspace(min(y), max(y), 10)
-    X_fit, Y_fit = np.meshgrid(x_fit, y_fit)
-    Z_fit = C[0] * X_fit + C[1] * Y_fit + C[2]  # Compute best-fit plane
-
-    # Plot data points and best-fit plane
-    fig = plt.figure(figsize=(8, 6))
-    ax = fig.add_subplot(111, projection='3d')
-    ax.scatter(x, y, z, color='blue', label='Original Data')
-    ax.plot_surface(X_fit, Y_fit, Z_fit, alpha=0.5, color='r')
-
-    # Labels and title
-    ax.set_xlabel('X Values')
-    ax.set_ylabel('Y Values')
-    ax.set_zlabel('Z Values')
-    ax.set_title('Best-Fit Plane in 3D')
-    ax.legend()
-
-    # Generate the best-fit plane equation as a string
-    equation = f"z = {C[0]:.4f}x + {C[1]:.4f}y + {C[2]:.4f}"
-    plt.close(fig)
-    return fig, C # Returns the figure and equation string
-
+    return tuple(C)  # Returns (A, B, C)
 
 def main(lower, upper):
-    eng = matlab.engine.start_matlab()
+    lower=0
+    upper=75000
+    print(f"Running main() with bounds: {lower}s - {upper}s")
 
-    # Define a point and direction for the line
-    point = matlab.double([1, 2, 3])  # Starting point (x0, y0, z0)
-    direction = matlab.double([2, -1, 1])  # Direction vector (a, b, c)
-    t_range = matlab.double([-5, 5])  # Range for parameter t
-    eng.addpath(r'C:\path\to\your\matlab\functions', nargout=0)  
+    # Define image path
+    IMAGE_PATH = "static/images/graph.png"
 
-    # Call MATLAB function
-    eng.draw3DLine(point, direction, t_range, nargout=0)
+    # Initialize SQL connection and query data
+    s = SQL()
+    q = """
+    SELECT positionChiefEciX, positionChiefEciY, positionChiefEciZ, positionDeputyEciX, positionDeputyEciY, positionDeputyEciZ FROM RpoPlan 
+    WHERE ? <= secondsSinceStart AND secondsSinceStart <= ? ;
+    """
+    x = s.query(q, (lower, upper))
+    s.close()
+    print("Finished query")
+    curr = time.time()
+
+    # Extract Deputy positions
+    deputyXpos = [row[3] for row in x]
+    deputyYpos = [row[4] for row in x]
+    deputyZpos = [row[5] for row in x]
+
+    # Extract Chief positions
+    chiefXpos = [row[0] for row in x]
+    chiefYpos = [row[1] for row in x]
+    chiefZpos = [row[2] for row in x]
+
+    # Define the semi-major and semi-minor axes for the elliptical dots
+    r1 = 45000000  # Stretch along X
+    r2 = 42000000  # Stretch along Z
+    t = np.linspace(lower, upper, 500)  # More points for smoothness
+
+    # Define elliptical parametric equations
+    x_ellipse = r1 * np.cos(t)
+    y_ellipse = r2 * np.sin(t)
+    deputy_z_max = max(deputyZpos) if deputyZpos else None
+    z_ellipse = deputy_z_max * (np.sin(t))
+  # Lifts the ellipse up
+
+
+    # Compute min/max for Deputy and Ellipse Z-values
+    deputy_z_min = min(deputyZpos) if deputyZpos else None
+   
+    ellipse_z_min = min(z_ellipse)
+    ellipse_z_max = max(z_ellipse)
+
+    # Compute best-fit plane coefficients
+    A, B, C = best_fit_plane(deputyXpos, deputyYpos, deputyZpos)
+
+    # Generate a mesh grid for the best-fit plane
+    x_min, x_max = min(deputyXpos), max(deputyXpos)
+    y_min, y_max = min(deputyYpos), max(deputyYpos)
+
+    X_fit, Y_fit = np.meshgrid(
+        np.linspace(x_min, x_max, 10),
+        np.linspace(y_min, y_max, 10)
+    )
+    Z_fit = A * X_fit + B * Y_fit + C  # Compute Z values for the plane
+
+    # Create 3D figure
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+
+    # Plot Deputy scatter plot (Blue)
+    ax.scatter(deputyXpos, deputyYpos, deputyZpos, color='blue', marker='.', s=10, label="Deputy Positions")
+
+    # Plot Chief scatter plot (Red)
+    ax.scatter(chiefXpos, chiefYpos, chiefZpos, color='red', marker='.', s=10, label="Chief Positions")
+
+    # Plot the 3D elliptical curve using dots (Green)
+    ax.scatter(x_ellipse, y_ellipse, z_ellipse, color='green', marker='.', s=5, label="3D Elliptical Dots")
+
+    # Plot the best-fit plane
+    ax.plot_surface(X_fit, Y_fit, Z_fit, alpha=0.5, cmap='Reds', edgecolor='none', label="Best-Fit Plane")
+
+    # Labels and title
+    ax.set_xlabel("X Axis")
+    ax.set_ylabel("Y Axis")
+    ax.set_zlabel("Z Axis")
+    ax.set_title("Combined 3D Graph: Positions, Elliptical Dots, and Best-Fit Plane")
+    ax.legend()
+    ax.grid(True)
+
+    max_range = max(r1, r2, abs(upper), max(deputyXpos, default=0), max(chiefXpos, default=0))
+    ax.set_xlim([-max_range, max_range])
+    ax.set_ylim([-max_range, max_range])
+   
 
     # Save figure
-    IMAGE_PATH = "static/images/3Dline.png"
-    eng.saveas(eng.gcf(), IMAGE_PATH, 'png', nargout=0)
-
-    eng.close()
+    plt.savefig(IMAGE_PATH)
 
 
+
+    elapsed = time.time() - curr
+    print(f"Total elapsed time: {elapsed:.2f} seconds")
+
+    # Return min and max values
+    result = {
+        "deputy_z_min": deputy_z_min,
+        "deputy_z_max": deputy_z_max,
+        "ellipse_z_min": ellipse_z_min,
+        "ellipse_z_max": ellipse_z_max
+    }
+
+    print("Computed Z-Value Ranges:")
+    print(f"  Deputy Z Min: {result['deputy_z_min']}")
+    print(f"  Deputy Z Max: {result['deputy_z_max']}")
+    print(f"  Ellipse Z Min: {result['ellipse_z_min']}")
+    print(f"  Ellipse Z Max: {result['ellipse_z_max']}")
+
+    
+
+
+
+    return result
