@@ -2,7 +2,7 @@ import asyncio
 import base64
 import os
 from channels.generic.websocket import AsyncWebsocketConsumer
-
+from . import mat2  # Import main from mat2
 class LiveGraphConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         await self.accept()

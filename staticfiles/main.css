@@ -1,0 +1,33 @@
+
+nav {
+    margin: 5px;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: large;
+    font-weight: bold;
+    background-color: gray;
+    border-radius: 5px;
+}
+
+nav h1{
+    margin: 0;
+    text-decoration: none;
+}
+
+nav div{
+    display: flex;
+    justify-content: space-between;
+    width: 10%;
+    font-style: normal;
+    
+}
+nav a{
+    color: blue;
+}
+
+h1 {
+    margin: 10px;
+    text-decoration: underline;
+}
