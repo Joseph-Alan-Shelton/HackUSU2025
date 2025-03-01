@@ -41,3 +41,7 @@ h1 {
 table {
     padding: 20px;
 }
+
+nav {
+    width: 100%;
+}

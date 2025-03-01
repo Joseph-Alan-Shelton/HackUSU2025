@@ -21,7 +21,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("", views.index),
     path("graph/",views.graph_view),
-    path("graph_1/",views.graph_view_1),
+    path("graph_events/",views.graph_view_1),
     path("graph_live/",views.graph_view_live),
     path("table/", views.table),
     path("graph_traj/",views.graph_view_Traj),
