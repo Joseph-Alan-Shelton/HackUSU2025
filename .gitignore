@@ -3,3 +3,4 @@
 /dataFreaks/__pycache__
 
 static/images/graph.png
+*.pyc
