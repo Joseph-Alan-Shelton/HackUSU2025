@@ -8,6 +8,7 @@ class SQL:
         self.driver = "{ODBC Driver 17 for SQL Server}"
         self.conn = None
         self.cursor = None
+        self.connect()
 
     def connect(self):
         self.conn = pyodbc.connect(
