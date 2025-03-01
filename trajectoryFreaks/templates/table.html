@@ -51,21 +51,54 @@
 </head>
 
 <body>
-    <h1>Show data</h1>
-    <h3>{{table}}</h3>
-    {% if table %}
-    <table>
-        <tr>
-            <th>Test 1</th>
-        </tr>
-        {% for item in table %}
-        <tr> 
-            <td>{{ item.Test }}</td>
-        </tr>
-        {% endfor %}
-    </table>
-    {% else %}
-        <h1>No Data</h1>
-    {% endif %}
+    <div id="TableDiv">
+        <table border="1">
+            <tr>
+                <th>Maneuver ID</th>
+                <th>Maneuver Start Time</th>
+                <th>Waypoint X</th>
+                <th>Waypoint Y</th>
+                <th>Waypoint Z</th>
+            </tr>
+            {% for item in ManeuverData %}
+                <tr>
+                    {% for element in item %}
+                        <td>{{ element }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+        <table border="1">
+            <tr>
+                <th>Event ID</th>
+                <th>Payload Start Time</th>
+                <th>Payload End Time</th>
+                <th>Event Type</th>
+            </tr>
+            {% for item in PayloadData %}
+                <tr>
+                    {% for element in item %}
+                        <td>{{ element }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+        <table border="1">
+            <tr>
+                <th>Contact ID</th>
+                <th>Contact Start Time</th>
+                <th>Contact End Time</th>
+                <th>Ground Site</th>
+            </tr>
+            {% for item in GroundData %}
+                <tr>
+                    {% for element in item %}
+                        <td>{{ element }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
 </body>
+
 </html>
