@@ -17,18 +17,25 @@ eng = matlab.engine.start_matlab()
 # Define image path
 image_path = "static/images/graph.png"
 
-# Initialize x, y, z values
-s=SQL()
-q= f"""
+# Initialize sql connection
+lowerbound = 387000
+upperbound = 388000
+s = SQL()
+
+# Get the positions within our bounds
+q = f"""
         SELECT * FROM RpoPlan WHERE ? <= secondsSinceStart And secondsSinceStart <= ? ORDER BY (select Null);
         """
-x = s.query(q,(0,1000))
+rpoData = s.query(q,(lowerbound, upperbound))
+
+# Get the times for each position
+rpoTimes = [row[0] for row in rpoData]
 
 # Plot Deputy-----------------------------------------------------------------------
 # Get Deputy's positions from the sheet
-deputyXpos=[row[14] for row in x]
-deputyYpos=[row[15] for row in x]
-deputyZpos=[row[16] for row in x]
+deputyXpos = [row[14] for row in rpoData]
+deputyYpos = [row[15] for row in rpoData]
+deputyZpos = [row[16] for row in rpoData]
 
 # Convert to MATLAB format
 x_mat = matlab.double(deputyXpos[0])
@@ -58,9 +65,9 @@ eng.set(scatter_handle, 'XData', x_mat, 'YData', y_mat, 'ZData', z_mat, nargout=
 
 # Plot Chief--------------------------------------------------------------------------
 # Get Deputy's positions from the sheet
-chiefXpos=[row[8] for row in x]
-chiefYpos=[row[9] for row in x]
-chiefZpos=[row[10] for row in x]
+chiefXpos=[row[8] for row in rpoData]
+chiefYpos=[row[9] for row in rpoData]
+chiefZpos=[row[10] for row in rpoData]
 
 # Convert to MATLAB format
 x_mat = matlab.double(chiefXpos[0])
@@ -97,6 +104,38 @@ Z_mat = matlab.double(Z_fit.tolist())
 
 # Add the new best-fit plane
 plane_handle = eng.surf(X_mat, Y_mat, Z_mat, 'FaceAlpha', 0.5, 'EdgeColor', 'none', nargout=1)  # 50% transparency
+
+# Highlight points when maneuvers occur -------------------------------------------------------------
+# Get the times of maneuvers that occur within our bounds
+q = f"""
+        SELECT positionDeputyEciX,positionDeputyEciY,positionDeputyEciZ FROM ManeuverPlan JOIN RpoPlan 
+        on ManeuverPlan.secondsSinceStart = RpoPlan.secondsSinceStart where ? <= RpoPlan.secondsSinceStart And RpoPlan.secondsSinceStart <= ? 
+        ORDER BY (select RpoPlan.secondsSinceStart);
+        """
+maneuverPositions = s.query(q,(lowerbound, upperbound))
+
+# Find the coordinates of every maneuver time
+xManeuvers = [row[0] for row in maneuverPositions]
+yManeuvers = [row[1] for row in maneuverPositions]
+zManeuvers = [row[2] for row in maneuverPositions]
+
+# If there are any manuevers in these bounds, plot them
+if xManeuvers:
+    # Convert to MATLAB format
+    x_mat = matlab.double(xManeuvers[0])
+    y_mat = matlab.double(yManeuvers[0])
+    z_mat = matlab.double(zManeuvers[0])
+
+    # Create MATLAB figure
+    scatter_handle = eng.scatter3(x_mat, y_mat, z_mat, 50, 'm', 'filled', nargout=1)  # Scatter plot
+
+    # Convert updated lists to MATLAB arrays
+    x_mat = matlab.double(xManeuvers)
+    y_mat = matlab.double(yManeuvers)
+    z_mat = matlab.double(zManeuvers)
+
+    # Update scatter plot data without deleting it
+    eng.set(scatter_handle, 'XData', x_mat, 'YData', y_mat, 'ZData', z_mat, nargout=0)
 
 # Save the updated graph **without opening MATLAB**
 eng.saveas(eng.gcf(), image_path, 'png', nargout=0)
