@@ -45,82 +45,81 @@ def best_fit_plane(x, y, z):
 
 
 def main(lower, upper):
-        print(f"Running main() with bounds: {lower}s - {upper}s")
+    print(f"Running main() with bounds: {lower}s - {upper}s")
 
-        # Add parent directory to sys.path
+    # Add parent directory to sys.path
 
-        # Start MATLAB Engine
-        eng = matlab.engine.start_matlab()
+    # Start MATLAB Engine
+    eng = matlab.engine.start_matlab()
 
-        # Define image path
-        IMAGE_PATH = "static/images/graph.png"
+    # Define image path
+    IMAGE_PATH = "static/images/graph.png"
 
-        # Initialize SQL connection and query data
-        s = SQL()
-        q = """
-        SELECT * FROM RpoPlan 
-        WHERE ? <= secondsSinceStart AND secondsSinceStart <= ? 
-        ORDER BY (SELECT NULL);
-        """
-        x = s.query(q, (lower, upper))
+    # Initialize SQL connection and query data
+    s = SQL()
+    q = """
+    SELECT * FROM RpoPlan 
+    WHERE ? <= secondsSinceStart AND secondsSinceStart <= ? 
+    ORDER BY (SELECT NULL);
+    """
+    x = s.query(q, (lower, upper))
 
-        # Extract timestamps
-        times = [row[0] for row in x]
-        print(times)
+    # Extract timestamps
+    times = [row[0] for row in x]
 
-        # --------------------------- Plot Deputy ---------------------------
-        deputyXpos = [row[14] for row in x]
-        deputyYpos = [row[15] for row in x]
-        deputyZpos = [row[16] for row in x]
+    # --------------------------- Plot Deputy ---------------------------
+    deputyXpos = [row[14] for row in x]
+    deputyYpos = [row[15] for row in x]
+    deputyZpos = [row[16] for row in x]
 
-        # Create MATLAB figure (only once)
-        eng.figure('Visible', 'off', nargout=0)  
-        scatter_handle = eng.scatter3(
-        matlab.double(deputyXpos), 
-        matlab.double(deputyYpos), 
-        matlab.double(deputyZpos), 
-        50, 'b', 'filled', nargout=1
-        )
+    # Create MATLAB figure (only once)
+    eng.figure('Visible', 'off', nargout=0)  
+    scatter_handle = eng.scatter3(
+    matlab.double(deputyXpos), 
+    matlab.double(deputyYpos), 
+    matlab.double(deputyZpos), 
+    50, 'b', 'filled', nargout=1
+    )
 
-        # Set graph properties
-        eng.xlabel('X Values', nargout=0)
-        eng.ylabel('Y Values', nargout=0)
-        eng.zlabel('Z Values', nargout=0)
-        eng.title('3D Live Graph with Best-Fit Plane', nargout=0)
-        eng.grid('on', nargout=0)
-        eng.hold('on', nargout=0)
+    # Set graph properties
+    eng.xlabel('X Values', nargout=0)
+    eng.ylabel('Y Values', nargout=0)
+    eng.zlabel('Z Values', nargout=0)
+    eng.title('3D Live Graph with Best-Fit Plane', nargout=0)
+    eng.grid('on', nargout=0)
+    eng.hold('on', nargout=0)
 
-        # Compute best-fit plane
-        _, equation = best_fit_plane(deputyXpos, deputyYpos, deputyZpos)
-        A, B, C = equation[0], equation[1], equation[2]
+    # Compute best-fit plane
+    _, equation = best_fit_plane(deputyXpos, deputyYpos, deputyZpos)
+    A, B, C = equation[0], equation[1], equation[2]
 
-        # Generate a mesh grid for the plane
-        x_fit = np.linspace(min(deputyXpos), max(deputyXpos), 10)
-        y_fit = np.linspace(min(deputyYpos), max(deputyYpos), 10)
-        X_fit, Y_fit = np.meshgrid(x_fit, y_fit)
-        Z_fit = A * X_fit + B * Y_fit + C
+    # Generate a mesh grid for the plane
+    x_fit = np.linspace(min(deputyXpos), max(deputyXpos), 10)
+    y_fit = np.linspace(min(deputyYpos), max(deputyYpos), 10)
+    X_fit, Y_fit = np.meshgrid(x_fit, y_fit)
+    Z_fit = A * X_fit + B * Y_fit + C
 
-        # Add best-fit plane
-        eng.surf(
-        matlab.double(X_fit.tolist()), 
-        matlab.double(Y_fit.tolist()), 
-        matlab.double(Z_fit.tolist()), 
-        'FaceAlpha', 0.5, 'EdgeColor', 'none', nargout=1
-        )
+    # Add best-fit plane
+    eng.surf(
+    matlab.double(X_fit.tolist()), 
+    matlab.double(Y_fit.tolist()), 
+    matlab.double(Z_fit.tolist()), 
+    'FaceAlpha', 0.5, 'EdgeColor', 'none', nargout=1
+    )
 
-        # --------------------------- Plot Chief ---------------------------
-        chiefXpos = [row[8] for row in x]
-        chiefYpos = [row[9] for row in x]
-        chiefZpos = [row[10] for row in x]
+    # --------------------------- Plot Chief ---------------------------
+    chiefXpos = [row[8] for row in x]
+    chiefYpos = [row[9] for row in x]
+    chiefZpos = [row[10] for row in x]
 
-        # Create Chief's scatter plot (Red)
-        scatter_handle = eng.scatter3(
-        matlab.double(chiefXpos), 
-        matlab.double(chiefYpos), 
-        matlab.double(chiefZpos), 
-        50, 'r', 'o', nargout=1
-        )
+    # Create Chief's scatter plot (Red)
+    scatter_handle = eng.scatter3(
+    matlab.double(chiefXpos), 
+    matlab.double(chiefYpos), 
+    matlab.double(chiefZpos), 
+    50, 'r', 'o', nargout=1
+    )
 
-        # Save the updated graph
-        eng.saveas(eng.gcf(), IMAGE_PATH, 'png', nargout=0)
+    # Save the updated graph
+    eng.saveas(eng.gcf(), IMAGE_PATH, 'png', nargout=0)
 
