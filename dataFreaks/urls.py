@@ -23,8 +23,10 @@ urlpatterns = [
     path("graph/",views.graph_view),
     path("graph_1/",views.graph_view_1),
     path("graph_live/",views.graph_view_live),
+    path("graph_traj/",views.graph_view_Traj),
      path("live-matlab-graph/", views.live_graph_page, name="live_graph_page"),
      path('run-mat/', views.run_mat, name='run-mat'),
       path('run-mat2/', views.run_mat2, name='run-mat2'),
-      path('run-matLive/', views.run_mat2, name='run-matLive'),
+      path('run-matLive/', views.run_mat_live, name='run-mat_live'),
+      path('run-matTraj/', views.run_mat_Traj, name='run-mat_Traj'),
 ]
