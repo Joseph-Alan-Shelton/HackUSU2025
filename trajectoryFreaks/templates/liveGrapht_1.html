@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live MATLAB Graph</title>
+    <title>Event MATLAB Graph</title>
     <script>
         let socket = new WebSocket("ws://127.0.0.1:8000/ws/live-graph/");
 
@@ -51,16 +51,19 @@
 </head>
 
 <body>
-    <h1>Live MATLAB Graph</h1>
+    <h1>Event MATLAB Graph</h1>
 
     <!-- Bound input fields -->
-    <label for="lowerBound">Lower Bound (s):</label>
-    <input type="number" id="lowerBound" min="0" placeholder="Enter lower bound">
-
-    <label for="upperBound">Upper Bound (s):</label>
-    <input type="number" id="upperBound" min="0" placeholder="Enter upper bound">
-
-    <button onclick="updateBounds()">Set Bounds</button>
+    <div class="input-container">
+        <label for="lowerBound">Lower Bound (s):</label>
+        <input type="number" id="lowerBound" min="0" placeholder="Enter lower bound">
+    
+        <label for="upperBound">Upper Bound (s):</label>
+        <input type="number" id="upperBound" min="0" placeholder="Enter upper bound">
+    
+        <button onclick="updateBounds()">Set Bounds</button>
+    </div>
+    
 
     <!-- Live graph -->
     <img id="graph" src="" alt="Real-time MATLAB Graph">

@@ -93,7 +93,7 @@ def main(lower, upper):
         chiefZposTemp.append(chiefZpos[i])
 
         deputy_positions = matlab.double([deputyXposTemp, deputyYposTemp, deputyZposTemp])
-        scatter_handle = eng.scatter3(*deputy_positions, 50, 'b', 'filled', nargout=1)
+        scatter_handle = eng.scatter3(*deputy_positions, 50, 'b', '.', nargout=1)
         
         # Compute best-fit plane
         _, equation = best_fit_plane(deputyXposTemp, deputyYposTemp, deputyZposTemp)
@@ -118,7 +118,7 @@ def main(lower, upper):
 
         # Create Chief's scatter plot (Red)
         deputy_positions = matlab.double([chiefXposTemp, chiefYposTemp, chiefZposTemp])
-        scatter_handle = eng.scatter3(*deputy_positions, 50, 'r', 'o', nargout=1)
+        scatter_handle = eng.scatter3(*deputy_positions, 50, 'r', '.', nargout=1)
         eng.view(3, nargout=0)
 
         # Save the updated graph

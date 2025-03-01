@@ -70,7 +70,7 @@ def main(lower, upper):
     # Create MATLAB figure (only once)
     eng.figure('Visible', 'off', nargout=0)  
     deputy_positions = matlab.double([deputyXpos, deputyYpos, deputyZpos])
-    scatter_handle = eng.scatter3(*deputy_positions, 50, 'b', 'filled', nargout=1)
+    scatter_handle = eng.scatter3(*deputy_positions, 50, 'b', '.', nargout=1)
 
     # Set graph properties
     eng.eval("xlabel('X Values'); ylabel('Y Values'); zlabel('Z Values'); title('3D Live Graph with Best-Fit Plane'); grid on; hold on;", nargout=0)
@@ -106,7 +106,7 @@ def main(lower, upper):
 
     # Create Chief's scatter plot (Red)
     deputy_positions = matlab.double([chiefXpos, chiefYpos, chiefZpos])
-    scatter_handle = eng.scatter3(*deputy_positions, 50, 'r', 'o', nargout=1)
+    scatter_handle = eng.scatter3(*deputy_positions, 50, 'r', '.', nargout=1)
 
     # Save the updated graph
     eng.saveas(eng.gcf(), IMAGE_PATH, 'png', nargout=0)

@@ -36,7 +36,7 @@ def main(lowerbound, upperbound):
 
     # Create MATLAB figure **(only once)**
     eng.figure('Visible', 'off', nargout=0)  # Hide the figure
-    scatter_handle = eng.scatter3(x_mat, y_mat, z_mat, 50, 'b', 'filled', "DisplayName", "Deputy Path", nargout=1)  # Scatter plot
+    scatter_handle = eng.scatter3(x_mat, y_mat, z_mat, 50, 'b', '.', "DisplayName", "Deputy Path", nargout=1)  # Scatter plot
     eng.xlabel('X Values', nargout=0)
     eng.ylabel('Y Values', nargout=0)
     eng.zlabel('Z Values', nargout=0)
@@ -65,7 +65,7 @@ def main(lowerbound, upperbound):
     z_mat = matlab.double(chiefZpos[0])
 
     # Create MATLAB figure **(only once)**
-    scatter_handle = eng.scatter3(x_mat, y_mat, z_mat, 50, 'r', 'o', "DisplayName", "RSO Path", nargout=1)  # Scatter plot
+    scatter_handle = eng.scatter3(x_mat, y_mat, z_mat, 50, 'r', '.', "DisplayName", "RSO Path", nargout=1)  # Scatter plot
 
     # Convert updated lists to MATLAB arrays
     x_mat = matlab.double(chiefXpos)
@@ -98,7 +98,7 @@ def main(lowerbound, upperbound):
         z_mat = matlab.double(zManeuvers[0])
 
         # Create MATLAB figure
-        scatter_handle = eng.scatter3(x_mat, y_mat, z_mat, 50, 'm', 'filled', "DisplayName", "Manuevers", nargout=1)  # Scatter plot
+        scatter_handle = eng.scatter3(x_mat, y_mat, z_mat, 50, 'm', '.', "DisplayName", "Manuevers", nargout=1)  # Scatter plot
 
         # Convert updated lists to MATLAB arrays
         x_mat = matlab.double(xManeuvers)
@@ -131,7 +131,7 @@ def main(lowerbound, upperbound):
         z_mat = matlab.double(zGrountContacts[0])
 
         # Create MATLAB figure
-        scatter_handle = eng.scatter3(x_mat, y_mat, z_mat, 50, 'g', 'filled', "DisplayName", "Ground Contact", nargout=1)  # Scatter plot
+        scatter_handle = eng.scatter3(x_mat, y_mat, z_mat, 50, 'g', '.', "DisplayName", "Ground Contact", nargout=1)  # Scatter plot
 
         # Convert updated lists to MATLAB arrays
         x_mat = matlab.double(xGrountContacts)
@@ -165,7 +165,7 @@ def main(lowerbound, upperbound):
         z_mat = matlab.double(zPayloads[0])
 
         # Create MATLAB figure
-        scatter_handle = eng.scatter3(x_mat, y_mat, z_mat, 50, 'c', 'filled', "DisplayName", "Payload Events", nargout=1)  # Scatter plot
+        scatter_handle = eng.scatter3(x_mat, y_mat, z_mat, 50, 'c', '.', "DisplayName", "Payload Events", nargout=1)  # Scatter plot
 
         # Convert updated lists to MATLAB arrays
         x_mat = matlab.double(xPayloads)
