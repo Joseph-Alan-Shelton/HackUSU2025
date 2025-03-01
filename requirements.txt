@@ -1,1 +1,2 @@
 pip install pyodbc sqlalchemy pandas
+pip install matplotlib
