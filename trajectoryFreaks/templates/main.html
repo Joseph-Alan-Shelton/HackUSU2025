@@ -1,7 +1,45 @@
 <!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Page</title>
+    <link rel="stylesheet" href="/static/main.css">
+    <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+</head>
+<body>
+    {% include "header.html" with title="Main" %}
+    <main>
+        <h1>Main Page</h1>
+        <div class="description">
+            <h2>Plot Range</h2>
+            <p>Visualize a range of data points from our database. This tool allows you to select a specific range and plot the corresponding data points for detailed analysis.</p>
+            <a href="/graph/" id="assignment">Plot Range</a>
+        </div>
 
-<meta charset="UTF-8">
-<link rel="stylesheet" href="/static/main.css">
-<link rel="icon" href="/static/favicon.ico" type="image/x-icon">
-{% include "header.html" with title=Main %}
-<h1>Main Page</h1>
+        <div class="description">
+            <h2>Plot Live</h2>
+            <p>Experience real-time data visualization with our live plotting tool. This feature continuously updates the graph with new data points as they are recorded in the database.</p>
+            <a href="/graph_live/" id="profile">Plot Live</a>
+        </div>
+
+        <div class="description">
+            <h2>Trajectory Plot</h2>
+            <p>Analyze the trajectory of objects based on recorded data points. This tool helps you visualize the path and movement patterns of objects over time.</p>
+            <a href="/graph_traj/" id="profile">Trajectory Plot</a>
+        </div>
+
+        <div class="description">
+            <h2>Plot Events</h2>
+            <p>Identify and visualize specific events within the data. This feature allows you to highlight and analyze significant occurrences based on predefined criteria.</p>
+            <a href="/graph_events/" id="profile">Plot Events</a>
+        </div>
+
+        <div class="description">
+            <h2>Data Tables</h2>
+            <p>Access and view detailed tables of data points from our database. This tool provides a structured and comprehensive view of the data for in-depth analysis.</p>
+            <a href="/table/" id="profile">Data Tables</a>
+        </div>
+    </main>
+</body>
+</html>
