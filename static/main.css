@@ -1,38 +1,72 @@
-
+/* Navigation Bar */
 nav {
-    margin: 5px;
-    padding: 10px;
+    margin: 10px;
+    padding: 15px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     font-size: large;
     font-weight: bold;
-    background-color: gray;
-    border-radius: 5px;
+    background-color: #222; /* Darker gray for a modern look */
+    border-radius: 20px;
+    width: 98%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow */
 }
 
-nav h1{
+nav h1 a {
     margin: 0;
-    text-decoration: none;
+    padding: 0;
+}
+nav h1 a {
+    text-decoration: none !important;
+    color: white;
+    margin: 0;
+    padding: 1px;
+    font-size: 24px;
 }
 
-nav div{
+nav div {
     display: flex;
     justify-content: space-between;
-    width: 10%;
+    width: 40%; /* Adjust width for better alignment */
     font-style: normal;
-    
-}
-nav a{
-    color: blue;
-    padding: 10px;
+    gap: 15px; /* Space between links */
 }
 
+nav a {
+    text-decoration: none;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 10px 15px;
+    transition: 0.3s ease-in-out;
+    border-radius: 10px;
+}
+
+/* Regular links in the navigation */
+nav a:hover {
+    background-color: #bb4141; /* Change background color on hover */
+    color: white; /* Ensure contrast */
+}
+
+/* Ensure no hover effect for h1 a */
+nav h1 a:hover {
+    text-decoration: none !important;
+    color: inherit !important;
+    background-color: transparent !important;
+    cursor: default;
+    font-size: 30px;
+}
+
+
+/* Heading */
 h1 {
     margin: 10px;
     text-decoration: underline;
+    color: white;
 }
 
+/* Table Styling */
 #TableDiv {
     display: flex;
     flex-direction: row;
@@ -40,8 +74,22 @@ h1 {
 
 table {
     padding: 20px;
+    border-collapse: collapse;
 }
 
-nav {
-    width: 100%;
+table td, table th {
+    padding: 10px;
+    border: 1px solid white;
+}
+
+/* Body Styling */
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    text-align: center;
+    background-color: #333; /* Dark background for contrast */
+    color: white;
 }
